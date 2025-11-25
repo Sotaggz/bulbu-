@@ -33,7 +33,7 @@
           <input id="mi" maxlength="2" placeholder="M"    oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '');">
         </label>
         <label>Suffix
-          <input id="suf" maxlength="3" placeholder="Jr"    oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '');">
+          <input id="suf" maxlength="3" placeholder="Jr."    oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '');">
         </label>
         <label>Student ID Number / LRN
           <input id="lrn" required   inputmode="numeric" placeholder="e.g. 20210001234"   oninput="this.value = this.value.replace(/[^0-9]/g, '');">
@@ -72,6 +72,61 @@
           <input type="email" id="email" name="email"  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$ required placeholder="user@example.com">
         </label>
       </div>
+     <div>   
+         <label>Upload Photo (JPEG/PNG, max 2MB)
+           <input type="file" id="photoInput" accept="image/png, image/jpeg" />
+         </label>
+        
+        <div id="photoPreview" style="margin-top:8px;">
+          <img id="previewImg" alt="Selected photo preview" style="max-width:200px;max-height:200px;display:none;border:1px solid #ccc;padding:4px;background:#fff;" />
+          <p id="previewInfo" style="font-size:0.9rem;color:#666;margin:6px 0 0;display:none;"></p>
+        </div>
+       </div>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+   <script>
+      // Bernard Condensed MT Base64 font (example placeholder, replace with real base64 if needed)
+     // Image preview handler
+     (function(){
+       const photoInput = document.getElementById('photoInput');
+       const previewImg = document.getElementById('previewImg');
+       const previewInfo = document.getElementById('previewInfo');
+
+       if (!photoInput) return;
+
+       photoInput.addEventListener('change', (e) => {
+         const file = e.target.files && e.target.files[0];
+         if (!file) {
+           previewImg.style.display = 'none';
+           previewInfo.style.display = 'none';
+           previewImg.src = '';
+           return;
+         }
+
+         if (!file.type.startsWith('image/')) {
+           alert('Please select a valid image file (PNG or JPEG).');
+           e.target.value = '';
+           return;
+         }
+
+         const maxBytes = 2 * 1024 * 1024; // 2MB
+         if (file.size > maxBytes) {
+           alert('File is too large. Maximum size is 2 MB.');
+           e.target.value = '';
+           return;
+         }
+
+         const objectUrl = URL.createObjectURL(file);
+         previewImg.onload = () => {
+           try { URL.revokeObjectURL(objectUrl); } catch (err) {}
+         };
+         previewImg.src = objectUrl;
+         previewImg.style.display = 'block';
+         previewInfo.textContent = file.name + ' — ' + (file.size / 1024).toFixed(1) + ' KB';
+         previewInfo.style.display = 'block';
+       });
+     })();
+   </script>
       <div class="controls">
         <button id="addBtn">Add Registrant</button>
         <button id="createBtn" class="secondary" type="button">Force Create PDF (override)</button>
@@ -255,4 +310,5 @@
   </script>
 </body>
 </html>
+
 
